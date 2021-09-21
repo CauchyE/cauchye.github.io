@@ -58,6 +58,7 @@
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/preact/10.5.13/preact.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/htm/3.0.4/htm.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown.js/0.5.0/markdown.min.js"></script>
   <script>
     function getParam(name, url) {
       if (!url) url = window.location.href;
@@ -111,7 +112,7 @@
     const html = htm.bind(preact.h);
     const Card = props => html`
       <li class="card">
-        ${ props.card.note ? html`${props.card.note}` : html``}
+        ${ props.card.note ? html`<span innerHTML=${markdown.toHTML(props.card.note)}></span>` : html``}
         ${ props.card.issue ? html`
           <a href="${props.card.issue.html_url}" target="_blank">${props.card.issue.title}</a>
         ` : html`` }
