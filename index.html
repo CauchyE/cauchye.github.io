@@ -115,12 +115,12 @@
     const html = htm.bind(preact.h);
     const Card = props => html`
       <li class="card">
-        ${ props.card.note ? html`<span innerHTML=${markdown
+        ${ props.card.note ? html`<span innerHTML=${emoji.replace_colons(
+          markdown
           .toHTML(
-            emoji.replace_colons(
               props.card.note
-                .replace('- [ ]', '- ☐')
-                .replace('- [x]', '- ☒')
+                .replace(/- \[ \]/, '- ☐')
+                .replace(/- \[x\]/, '- ☒')
             )
           )
         }></span>` : html``}
