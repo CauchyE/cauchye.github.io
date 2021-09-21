@@ -111,6 +111,7 @@
     }
 
     const emoji = new EmojiConvertor();
+    emoji.replace_mode = 'unified';
 
     const html = htm.bind(preact.h);
     const Card = props => html`
@@ -119,8 +120,8 @@
           markdown
           .toHTML(
               props.card.note
-                .replace(/- \[ \]/, '- ☐')
-                .replace(/- \[x\]/, '- ☒')
+                .replaceAll('- [ ]', '- ☐')
+                .replaceAll('- [x]', '- ☒')
             )
           )
         }></span>` : html``}
