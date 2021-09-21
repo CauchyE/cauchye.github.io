@@ -68,18 +68,18 @@
 
     async function getProjects() {
       const url = `https://api.github.com/orgs/${githubOrgName}/projects`;
-      return JSON.parse(await fetch(url, options));
+      return await fetch(url, options).then(res => res.json());
     }
 
     async function getColumns(project) {
       const url = project.columns_url;
-      return JSON.parse(await fetch(url, options));
+      return await fetch(url, options).then(res => res.json());
       
     }
 
     async function getCards(column) {
       const url = column.cards_url;
-      return JSON.parse(await fetch(url, options));
+      return await fetch(url, options).then(res => res.json());
     }
 
     const html = htm.bind(preact.h);
