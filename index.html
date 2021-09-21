@@ -17,6 +17,7 @@
       flex-direction: column;
     }
     .project-inner {
+      padding: 0 8px;
       flex: auto;
       overflow-x: scroll;
       overflow-y: hidden;
@@ -25,12 +26,16 @@
 
     .column {
       background: whitesmoke;
-      margin-right: 8px;
+      margin: 0 8px;
+      display: flex;
+      flex-direction: column;
+    }
+    .column-inner {
       padding: 8px;
       border-radius: 8px;
+      flex: auto;
       overflow-y: auto;
       width: 300px;
-      height: 100%;
     }
 
     .card {
@@ -105,9 +110,9 @@
     `;
     const Cards = props => html`${props.cards.map(card => html`<${Card} card=${card} />`)}`;
     const Column = props => html`
-      <div>
+      <div class="column">
         <h3>${props.column.name}</h3>
-        <ul class="column">
+        <ul class="column-inner">
           <${Cards} cards=${props.column.cards} />
         </ul>
       </div>
@@ -115,7 +120,7 @@
     const Columns = props => html`${props.columns.map(column => html`<${Column} column=${column} />`)}`;
     const Project = props => html`
       <div class="project">
-        <h2>${props.project.name}</h2>
+        <h2><a href="${props.project.html_url}" target="_blank">${props.project.name}</a></h2>
         <div class="project-inner">
           <${Columns} columns=${props.project.columns} />
         </div>
