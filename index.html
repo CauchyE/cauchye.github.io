@@ -60,7 +60,7 @@
 
     const headers = {
       "Accept" : "application/vnd.github.inertia-preview+json",
-      "Authorization" : `Basic ${Utilities.base64Encode(`${githubAccessUser}:${githubAccessToken}`)}`,
+      "Authorization" : `Basic ${btoa(`${githubAccessUser}:${githubAccessToken}`)}`,
     };
     const options = {
       "headers" : headers
