@@ -9,28 +9,122 @@
       margin: 0;
     }
     
-    .fill {
-      display: block;
+    .project {
       width: 100%;
       height: 100vh;
       margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .project-inner {
+      flex: auto;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      display: flex;
+    }
+
+    .column {
+      background: whitesmoke;
+      margin-right: 8px;
+      padding: 8px;
+      border-radius: 8px;
+      overflow-y: auto;
+      width: 300px;
+      height: 100%;
+    }
+
+    .card {
+      background: white;
+      margin-bottom: 8px;
+      padding: 8px;
+      border-radius: 4px;
+      list-style-type:none;
+      word-break: break-all;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/preact/10.5.13/preact.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htm/3.0.4/htm.min.js"></script>
+  <script>
+    function getParam(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, "\\$&");
+      const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+    const githubAccessUser = getParam('username');
+    const githubAccessToken = getParam('access_token');
+    const githubOrgName = 'CauchyE';
+
+    const headers = {
+      "Accept" : "application/vnd.github.inertia-preview+json",
+      "Authorization" : `Basic ${Utilities.base64Encode(`${githubAccessUser}:${githubAccessToken}`)}`,
+    };
+    const options = {
+      "headers" : headers
+    };
+
+    return options;
+
+    async function getProjects() {
+      const url = `https://api.github.com/orgs/${githubOrgName}/projects`;
+      return JSON.parse(await fetch(url, options));
+    }
+
+    async function getColumns(project) {
+      const url = project.columns_url;
+      return JSON.parse(await fetch(url, options));
+      
+    }
+
+    async function getCards(column) {
+      const url = column.cards_url;
+      return JSON.parse(await fetch(url, options));
+    }
+
+    const html = htm.bind(preact.h);
+    const Card = props => html`
+      <li class="card">
+        ${ props.note ? html`<p>${props.note}<p>` : ''}
+        <a href="${props.content_url}" target="_blank">Issue</a>  
+      </li>
+    `;
+    const Cards = props => html`${props.map(card => html`<${Card} ...${card} />`)}`;
+    const Column = props => html`
+      <div>
+        <h3>${props.name}</h3>
+        <ul class="column">
+          <${Cards} ...${props.cards} />
+        </ul>
+      </div>
+    `;
+    const Columns = props => html`${props.map(column => html`<${Column} ...${column} />`)}`;
+    const Project = props => html`
+      <div class="project">
+        <h2>${props.name}</h2>
+        <div class="project-inner">
+          <${Columns} ...${props.columns} />
+        </div>
+      </div>
+    `;
+    const Projects = props => html`${props.map(project => html`<${Project} ...${project} />`)}`;
+    const App = props => html`<${Projects} ...${props} />`;
+
+    getProjects()
+      .then(projects => Promise.all(projects.map(async project => ({
+        ...project, 
+        columns: await getColumns(project).then(columns => Promise.all(columns.map(async column => ({
+          ...column,
+          cards: await getCards(column)
+        }))))
+      }))))
+      .then(projects => {
+        preact.render(html`<${App} ...${projects} />`, document.body);
+      });
+  </script>
 </head>
 <body>
-  <iframe src="https://github.com/orgs/CauchyE/projects/1" class="fill" frameborder="0"></iframe>
-  <br />
-  <iframe src="https://github.com/orgs/CauchyE/projects/2" class="fill" frameborder="0"></iframe>
-  <br />
-  <iframe src="https://github.com/orgs/CauchyE/projects/3" class="fill" frameborder="0"></iframe>
-  <br />
-  <iframe src="https://github.com/orgs/CauchyE/projects/4" class="fill" frameborder="0"></iframe>
-  <br />
-  <iframe src="https://github.com/orgs/CauchyE/projects/5" class="fill" frameborder="0"></iframe>
-  <br />
-  <iframe src="https://github.com/orgs/CauchyE/projects/6" class="fill" frameborder="0"></iframe>
-  <br />
-  <iframe src="https://github.com/orgs/CauchyE/projects/7" class="fill" frameborder="0"></iframe>
-  <br />
 </body>
 </html>
