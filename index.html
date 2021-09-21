@@ -117,11 +117,7 @@
     const Card = props => html`
       <li class="card">
         ${ props.card.note ? html`<span innerHTML=${emoji.replace_colons(
-            marked(
-              props.card.note
-                .replaceAll('- [ ]', '- ☐')
-                .replaceAll('- [x]', '- ☒')
-            )
+            marked(props.card.note)
           )
         }></span>` : html``}
         ${ props.card.issue ? html`
