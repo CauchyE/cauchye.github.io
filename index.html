@@ -66,8 +66,6 @@
       "headers" : headers
     };
 
-    return options;
-
     async function getProjects() {
       const url = `https://api.github.com/orgs/${githubOrgName}/projects`;
       return JSON.parse(await fetch(url, options));
