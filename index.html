@@ -86,11 +86,21 @@
       return await fetch(url, options).then(res => res.json());
     }
 
+    async function getIssue(card) {
+      const url = card.content_url;
+      if (!url) {
+        return null;
+      }
+      return await fetch(url, options).then(res => res.json());
+    }
+
     const html = htm.bind(preact.h);
     const Card = props => html`
       <li class="card">
-        ${ props.card.note ? html`<p>${props.card.note}<p>` : ''}
-        <a href="${props.card.content_url}" target="_blank">Issue</a>  
+        ${ props.card.note ? html`${props.card.note}` : html``}
+        ${ props.card.issue ? html`
+          <a href="${props.card.issue.html_url}" target="_blank">${props.card.issue.title}</a>
+        ` : html`` }
       </li>
     `;
     const Cards = props => html`${props.cards.map(card => html`<${Card} card=${card} />`)}`;
@@ -119,7 +129,10 @@
         ...project, 
         columns: await getColumns(project).then(columns => Promise.all(columns.map(async column => ({
           ...column,
-          cards: await getCards(column)
+          cards: await getCards(column).then(cards => Promise.all(cards.map(async card => ({
+            ...card,
+            issue: await getIssue(card)
+          }))))
         }))))
       }))))
       .then(projects => {
