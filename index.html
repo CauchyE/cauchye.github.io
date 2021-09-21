@@ -58,6 +58,10 @@
     const githubAccessToken = getParam('access_token');
     const githubOrgName = 'CauchyE';
 
+    if (!githubAccessUser || !githubAccessToken) {
+      throw Error('username and access_token must be specified in query parameters.')
+    }
+
     const headers = {
       "Accept" : "application/vnd.github.inertia-preview+json",
       "Authorization" : `Basic ${btoa(`${githubAccessUser}:${githubAccessToken}`)}`,
@@ -85,30 +89,30 @@
     const html = htm.bind(preact.h);
     const Card = props => html`
       <li class="card">
-        ${ props.note ? html`<p>${props.note}<p>` : ''}
-        <a href="${props.content_url}" target="_blank">Issue</a>  
+        ${ props.card.note ? html`<p>${props.card.note}<p>` : ''}
+        <a href="${props.card.content_url}" target="_blank">Issue</a>  
       </li>
     `;
-    const Cards = props => html`${props.map(card => html`<${Card} ...${card} />`)}`;
+    const Cards = props => html`${props.cards.map(card => html`<${Card} card=${card} />`)}`;
     const Column = props => html`
       <div>
-        <h3>${props.name}</h3>
+        <h3>${props.column.name}</h3>
         <ul class="column">
-          <${Cards} ...${props.cards} />
+          <${Cards} cards=${props.column.cards} />
         </ul>
       </div>
     `;
-    const Columns = props => html`${props.map(column => html`<${Column} ...${column} />`)}`;
+    const Columns = props => html`${props.columns.map(column => html`<${Column} column=${column} />`)}`;
     const Project = props => html`
       <div class="project">
-        <h2>${props.name}</h2>
+        <h2>${props.project.name}</h2>
         <div class="project-inner">
-          <${Columns} ...${props.columns} />
+          <${Columns} columns=${props.project.columns} />
         </div>
       </div>
     `;
-    const Projects = props => html`${props.map(project => html`<${Project} ...${project} />`)}`;
-    const App = props => html`<${Projects} ...${props} />`;
+    const Projects = props => html`${props.projects.map(project => html`<${Project} project=${project} />`)}`;
+    const App = props => html`<${Projects} projects=${props.projects} />`;
 
     getProjects()
       .then(projects => Promise.all(projects.map(async project => ({
@@ -119,7 +123,7 @@
         }))))
       }))))
       .then(projects => {
-        preact.render(html`<${App} ...${projects} />`, document.body);
+        preact.render(html`<${App} projects=${projects} />`, document.body);
       });
   </script>
 </head>
